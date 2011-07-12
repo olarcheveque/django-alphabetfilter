@@ -59,7 +59,7 @@ def alphabet(cl):
     alpha_lookup = cl.params.get(alpha_field, '')
     link = lambda d: cl.get_query_string(d)
     
-    letters_used = set([o[field_name][0] for o in cl.model_admin.model.objects.all().values(field_name)])
+    letters_used = set([o[field_name][0].upper() for o in cl.model_admin.model.objects.all().values(field_name)])
     all_letters = list(_get_default_letters(cl.model_admin) | letters_used)
     all_letters.sort()
     
