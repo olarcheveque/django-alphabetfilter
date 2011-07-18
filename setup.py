@@ -23,6 +23,7 @@ setup(
     packages = find_packages(),
     license = 'Apache 2.0',
     include_package_data = True,
+    zip_safe=False,
     install_requires=read_file('requirements.txt'),
     classifiers = [
     ],
