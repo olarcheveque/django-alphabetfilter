@@ -6,9 +6,9 @@ works like date_hierarchy and an template tag for use elsewhere.
 __version_info__ = {
     'major': 0,
     'minor': 5,
-    'micro': 4,
+    'micro': 3,
     'releaselevel': 'auf',
-    'serial': 0
+    'serial': 3
 }
 
 def get_version():
