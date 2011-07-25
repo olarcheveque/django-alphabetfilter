@@ -2,19 +2,6 @@
 {% load admin_list alphafilter %}
 {% block extrastyle %}
 {{block.super}}
-	<style type="text/css" media="screen">
-	.change-list ul.alphabetfilter li {
-		width: 0.7em;
-	}
-	.change-list ul.alphabetfilter li.first {
-		width: 0.7em;
-	}
-	.inactive {
-		color: #999;
-	}
-	.selected {
-		color: red;
-	}
-	</style>
+    {% include "alphafilter/alphafilter_styles.html" %}
 {% endblock %}
 {% block date_hierarchy %}{% date_hierarchy cl %}{% alphabet cl %}{% endblock %}
