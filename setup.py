@@ -25,6 +25,7 @@ setup(
     include_package_data = True,
     zip_safe=False,
     install_requires=read_file('requirements.txt'),
+    zip_safe = False,
     classifiers = [
     ],
 )

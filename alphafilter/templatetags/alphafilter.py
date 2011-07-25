@@ -45,6 +45,7 @@ def _get_available_letters(field_name, db_table):
     cursor.execute(sql)
     rows = cursor.fetchall() or ()
     return set([row[0] for row in rows if row[0] is not None])
+        
 
 
 def alphabet(cl):
@@ -58,6 +59,7 @@ def alphabet(cl):
     alpha_field = '%s__istartswith' % field_name
     alpha_lookup = cl.params.get(alpha_field, '')
     link = lambda d: cl.get_query_string(d)
+    db_table = getattr(cl.model_admin, 'alphabet_filter_table', cl.model._meta.db_table)
     
     letters_used = set([o[field_name][0].upper() for o in cl.model_admin.model.objects.all().values(field_name)])
     all_letters = list(_get_default_letters(cl.model_admin) | letters_used)
@@ -83,11 +85,12 @@ class AlphabetFilterNode(Node):
     
     {% qs_alphabet_filter objects "lastname" "myapp/template.html" %}
     """
-    def __init__(self, qset, field_name, 
+    def __init__(self, qset, field_name, filtered=None,
         template_name="alphafilter/alphabet.html"):
         self.qset = Variable(qset)
         self.field_name = Variable(field_name)
         self.template_name = Variable(template_name)
+        self.filtered = filtered
     
     def render(self, context):
         try:
@@ -116,9 +119,16 @@ class AlphabetFilterNode(Node):
             qstring = ''
         
         link = lambda d: "?%s%s" % (qstring, "%s=%s" % d.items()[0])
-        letters_used = _get_available_letters(
+        if self.filtered == None:
+            letters_used = _get_available_letters(
                             field_name, 
                             qset.model._meta.db_table)
+        else:
+            letters = [getattr(row,field_name)[0] for row in qset]
+            if alpha_lookup == '' and letters is not None:
+                alpha_lookup = letters[0]
+            letters_used = set(letters)
+
         all_letters = list(_get_default_letters(None) | letters_used)
         all_letters.sort()
         
@@ -159,6 +169,8 @@ def qs_alphabet_filter(parser, token):
         return AlphabetFilterNode(bits[1], bits[2])
     elif len(bits) == 4:
         return AlphabetFilterNode(bits[1], bits[2], bits[3])
+    elif len(bits) == 5:
+        return AlphabetFilterNode(bits[1], bits[2], bits[3], bits[4])
     else:
         raise TemplateSyntaxError("%s is called with a queryset and field "
             "name, and optionally a template." % bits[0])
